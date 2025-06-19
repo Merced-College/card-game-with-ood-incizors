@@ -3,3 +3,9 @@
 
 Name: Garret Clark
 Date: 6/18/25
+
+Modifications to the code: 
+Added a Card field.
+Added a picture class, along with all constructors, accessors, mutators and more to support it.
+Added a section of code that display's the player's most valuable card as output. 
+Added improvements to the code, such as try-with-resources for file reading, Collections.shuffle for shuffling, carrd dealing improvements, Java streams, and more. 
