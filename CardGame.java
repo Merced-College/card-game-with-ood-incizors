@@ -1,63 +1,55 @@
-package cardGame;
+// Garret Clark
+// 6-18-25
+// This is a card Game w/ OOD, which displays the player's cards and checks for pairs. 
+
+// package cardGame;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class CardGame {
 
+	// Data structures to hold cards
 	private static ArrayList<Card> deckOfCards = new ArrayList<Card>();
 	private static ArrayList<Card> playerCards = new ArrayList<Card>();
 
 
 	public static void main(String[] args) {
+        // Use try-with-resources for Scanner
+        try (Scanner input = new Scanner(new File("cards.txt"))) {
+            while (input.hasNext()) {
+                String[] fields = input.nextLine().split(",");
+                Card newCard = new Card(fields[0], fields[1].trim(),
+                        Integer.parseInt(fields[2].trim()), fields[3]);
+                deckOfCards.add(newCard);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("error");
+            e.printStackTrace();
+        }
 
-		Scanner input = null;
-		try {
-			input = new Scanner(new File("cards.txt"));
-		} catch (FileNotFoundException e) {
-			// error
-			System.out.println("error");
-			e.printStackTrace();
-		}
+        // Use Collections.shuffle for shuffling
+        Collections.shuffle(deckOfCards);
 
-		while(input.hasNext()) {
-			String[] fields  = input.nextLine().split(",");
-			//	public Card(String cardSuit, String cardName, int cardValue, String cardPicture) {
-			Card newCard = new Card(fields[0], fields[1].trim(),
-					Integer.parseInt(fields[2].trim()), fields[3]);
-			deckOfCards.add(newCard);	
-		}
+        // Deal the player 5 cards (always remove from index 0)
+        for (int i = 0; i < 5; i++) {
+            playerCards.add(deckOfCards.remove(0));
+        }
 
-		shuffle();
+        System.out.println("players cards");
+        for (Card c : playerCards)
+            System.out.println(c);
 
-		//for(Card c: deckOfCards)
-			//System.out.println(c);
+        // Find and display the player's most valuable card using streams
+        playerCards.stream()
+            .max((c1, c2) -> Integer.compare(c1.getValue(), c2.getValue()))
+            .ifPresent(mostValuable -> System.out.println("Most valuable card: " + mostValuable));
 
-		//deal the player 5 cards
-		for(int i = 0; i < 4; i++) {
-			playerCards.add(deckOfCards.remove(i));
-		}
-		
-		System.out.println("players cards");
-		for(Card c: playerCards)
-			System.out.println(c);
-
-		System.out.println("pairs is " + checkFor2Kind());
-
-	}//end main
-
-	public static void shuffle() {
-
-		//shuffling the cards by deleting and reinserting
-		for (int i = 0; i < deckOfCards.size(); i++) {
-			int index = (int) (Math.random()*deckOfCards.size());
-			Card c = deckOfCards.remove(index);
-			//System.out.println("c is " + c + ", index is " + index);
-			deckOfCards.add(c);
-		}
-	}
+        System.out.println("pairs is " + checkFor2Kind());
+    }
 
 	//check for 2 of a kind in the players hand
 	public static boolean checkFor2Kind() {
